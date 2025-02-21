@@ -24,12 +24,6 @@
 
 @ Write and Erase Flash in STM32H745.
 @ NOTE this currently only supports writing to the first 1MB flash bank
-@  This is complex on this platform as the flash write is a minimum of a
-@  flash word which is 256 bits or 16 half words or 32 bytes
-@  as we know the area we are writing to is already erased we need to align
-@  the flashword on the 256 bit boundary, read in the existing data,
-@  then write the 16bits or 8bits we want in the correct place in the flash word
-@  then flash the flashword
 
 @ Porting: Rewrite this ! You need hflash! and - as far as possible - cflash!
 
@@ -42,8 +36,6 @@
 .equ FLASH_SR,      FLASH_Base + 0x10 @ Flash Status Register
 .equ FLASH_CCR,     FLASH_Base + 0x14 @ Flash Clear Control Register
 .equ FLASH_OPTCR,   FLASH_Base + 0x18 @ Flash Option Control Register
-
-.equ flashOverwrite, 1
 
 @ put the flash buffer in DTCRAM for now
 .equ FLASH_BUFFER, 0x20000000  @ DTCMRAM

@@ -1,15 +1,18 @@
 <?xml version="1.0"?>
 <todo version="0.1.20">
+    <note priority="medium" time="1740150776" done="1740177803">
+        fixup the clock code in terminal.s to be 400MHz etc
+    </note>
     <note priority="medium" time="1740150699">
         crash when list.fs is run
     </note>
-    <note priority="medium" time="1740150727">
+    <note priority="medium" time="1740150727" done="1740177816">
         add flash32bytesblockwrite to other common files
     </note>
     <note priority="medium" time="1740150739">
         check the flash erase code in flash.s
     </note>
-    <note priority="medium" time="1740150776">
-        fixup the clock code in terminal.s to be 400MHz etc
+    <note priority="medium" time="1740156482">
+        bug where , does not flash, flushflash leaves dictionary in turmoil
     </note>
 </todo>

@@ -269,6 +269,10 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
   .include "../common/flash16bytesblockwrite.s"
   .ltorg
   .endif
+  .ifdef flash32bytesblockwrite
+  .include "../common/flash32bytesblockwrite.s"
+  .ltorg
+  .endif
 
   .include "../common/calculations.s"
   .include "terminal.s"

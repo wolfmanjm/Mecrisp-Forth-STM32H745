@@ -624,6 +624,27 @@ dodoes_ram:
 dodoes_ram:
   .endif
 
+  .ifdef flash32bytesblockwrite
+    @ Special case for STM32H74x which has different alignment depending if compiling into Flash (32-even) or into RAM (4-even).
+
+    ldr r0, =Backlinkgrenze
+    cmp r3, r0
+.ifdef above_ram
+    blo.n dodoes_ram
+.else
+    bhs.n dodoes_ram
+.endif
+
+2:    movs r0, #31
+      ands r0, r1
+      cmp r0, #4
+      beq 1f
+        adds r1, #2
+        b 2b
+
+dodoes_ram:
+  .endif
+
   @ This is to align dictionary pointer to have does> target locations that are always 4-even
   movs r0, #2
   ands r0, r1
@@ -702,6 +723,36 @@ builds_ram:
 
 2:    bl here
       movs r0, #15
+      ands tos, r0
+      cmp tos, #4
+      drop
+      beq 1f
+        bl nop_hkomma
+        b 2b
+
+builds_ram:
+  .endif
+
+  .ifdef flash32bytesblockwrite
+    @ It is necessary for STM32H74X that Flash writes are aligned on 32.
+    @ So if we are compiling into Flash, we need to make sure that
+    @ the block the user might write to later is properly aligned.
+    ldr r0, =Dictionarypointer
+    ldr r1, [r0]
+
+    ldr r2, =Backlinkgrenze
+    cmp r1, r2
+.ifdef above_ram
+    blo.n builds_ram
+.else
+    bhs.n builds_ram
+.endif
+
+      @ See where we are. The sequence written for <builds does> is 12 Bytes long on M3/M4.
+      @ So we need to advance to 16n + 4 so that the opcode sequence ends on a suitable border.
+
+2:    bl here
+      movs r0, #31
       ands tos, r0
       cmp tos, #4
       drop

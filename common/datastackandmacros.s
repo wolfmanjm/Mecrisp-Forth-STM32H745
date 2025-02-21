@@ -290,7 +290,10 @@ psp .req r7
 
       .equ Dictionary_\@, .  @ Labels for a more readable assembler listing only
 
-   .ifdef flash16bytesblockwrite
+  .ifdef flash32bytesblockwrite
+9:      .word FlashDictionaryAnfang + 0x1C @ Insert Link with offset because of alignment issues.
+  .else
+	.ifdef flash16bytesblockwrite
 9:      .word FlashDictionaryAnfang + 0x0C @ Insert Link with offset because of alignment issues.
    .else
      .ifdef flash8bytesblockwrite
@@ -299,6 +302,7 @@ psp .req r7
 9:      .word FlashDictionaryAnfang  @ Link einfügen  Insert Link
      .endif
    .endif
+  .endif
         .hword \Flags     @ Flags setzen, diesmal 2 Bytes ! Wir haben Platz und Ideen :-)  Flag field, 2 bytes, space for ideas left !
 
         .byte 8f - 7f     @ Länge des Namensfeldes berechnen  Calculate length of name field
