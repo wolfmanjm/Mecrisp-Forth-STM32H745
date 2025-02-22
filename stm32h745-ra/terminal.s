@@ -124,7 +124,7 @@
   .equ RCC_PLLCFGR_DIVP1EN          ,   BIT16
   .equ RCC_PLLCFGR_DIVR1EN          ,   BIT18
   .equ RCC_PLLCFGR_PLL1RGE_Msk		,	3 << 2
-  .equ RCC_PLLINPUTRANGE_3          ,   %10 << 2
+  .equ RCC_PLLINPUTRANGE_2          ,   2 << 2
   .equ RCC_PLLCFGR_PLL1VCOSEL		,   1 << 1
   .equ RCC_PLLVCORANGE_WIDE         ,   0 << 1
   .equ RCC_PLLCKSELR_DIVM1_Msk		,   0x3F << 4
@@ -252,7 +252,7 @@ set_pll_400_mhz_sysclk:
   modify_reg 	RCC_PLLCKSELR, 	RCC_PLLCKSELR_PLLSRC_Msk, 	RCC_PLLSRC_HSE
   set_bit 		RCC_PLLCFGR, 	RCC_PLLCFGR_DIVP1EN
   set_bit 		RCC_PLLCFGR, 	RCC_PLLCFGR_DIVR1EN
-  modify_reg 	RCC_PLLCFGR, 	RCC_PLLCFGR_PLL1RGE_Msk,	RCC_PLLINPUTRANGE_3
+  modify_reg 	RCC_PLLCFGR, 	RCC_PLLCFGR_PLL1RGE_Msk,	RCC_PLLINPUTRANGE_2
   modify_reg 	RCC_PLLCFGR, 	RCC_PLLCFGR_PLL1VCOSEL,		RCC_PLLVCORANGE_WIDE
   modify_reg 	RCC_PLLCKSELR, 	RCC_PLLCKSELR_DIVM1_Msk, 	RCC_PLLCKSELR_DIVM1
   mov r2, RCC_PLL1DIVR_N1
@@ -286,8 +286,8 @@ uart_init: @ ( -- )
   push {lr}
 
   @ first enable caches and set highest CPU clock for performance
-  bl enable_i_cache
-  bl enable_d_cache
+  @bl enable_i_cache
+  @bl enable_d_cache
   bl set_power_config
   bl set_voltage_scaling
   bl enable_bypass_hse
