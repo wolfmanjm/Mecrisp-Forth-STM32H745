@@ -748,12 +748,12 @@ create: @ Nimmt das nächste Token aus dem Puffer,
   .endif
 
   .ifdef flash32bytesblockwrite
-    bl align32komma @ Vorrücken auf die nächste passende Schreibstelle
-    pushdaconst 28  @ Es muss ein kompletter 32-Byte-Block für das Linkfeld reserviert werden
-    bl allot        @ damit dies später noch nachträglich eingefügt werden kann.
+    bl align32komma @ Vorrücken auf die nächste passende Schreibstelle Advance to the next suitable writing position
+    pushdaconst 28  @ Es muss ein kompletter 32-Byte-Block für das Linkfeld reserviert werden A complete 32-byte block must be reserved for the link field
+    bl allot        @ damit dies später noch nachträglich eingefügt werden kann. so that this can be added later.
   .endif
 
-  bl here @ ( Tokenadresse Länge Neue-Linkadresse ) Das wird die neue Linkadresse
+  bl here @ ( Tokenadresse Länge Neue-Linkadresse ) Das wird die neue Linkadresse Token address Length New link address ) This will be the new link address
   pushdaconst 6 @ Lücke für die Flags und Link lassen  Leave space for Flags and Link - they are not known yet at this time.
   bl allot
 

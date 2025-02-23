@@ -374,6 +374,9 @@ callkommalang: @ ( Zieladresse -- ) Schreibt einen LANGEN Call-Befehl für does>
   @ Dies ist ein bisschen schwierig und muss nochmal gründlich optimiert werden.
   @ Schreibe einen ganz langen Sprung ins Dictionary !
   @ Wichtig für <builds does> wo die Lückengröße vorher festliegen muss.
+  @ This is a bit difficult and needs to be thoroughly optimized again.
+  @ Write a very long jump into the dictionary!
+  @ Important for <builds does> where the gap size must be determined beforehand.
 
   push {r0, r1, r2, r3, lr}
   adds tos, #1 @ Ungerade Adresse für Thumb-Befehlssatz   Uneven target address for Thumb instruction set !
@@ -513,12 +516,26 @@ literalkomma: @ Save r1, r2 and r3 !
 
 
     @ Die Adresse ist hier nicht auf dem Stack, sondern in LR. LR ist sowas wie "TOS" des Returnstacks.
-    @ Address is in LR which is something like "TOS in register" of return stack.
+    @ The address is not on the stack here, but in LR. LR is something like "TOS" of the return stack.
 
   pushdatos
   subs tos, lr, #1 @ Denn es ist normalerweise eine ungerade Adresse wegen des Thumb-Befehlssatzes.  Align address. It is uneven because of Thumb-instructionset bit set.
 
-  pop {pc}
+  .ifdef flash32bytesblockwrite
+    @ Special case for STM32H74x where any following definitions will be 16 bytes further on as they are aligned on the next
+    @ 32byte boundary, So we need to push the correct value on the stack if we are in flash
+    ldr r0, =Backlinkgrenze  @ check if the next addrss is in flash or ram
+    cmp lr, r0
+	.ifdef above_ram
+	    blo.n 1f
+	.else
+	    bhs.n 1f
+	.endif
+  @ If we are in flash add the 16 byte offset to account for the 32byte alignment of that next dictionary entry
+  adds tos, #16
+  .endif
+
+1: pop {pc}
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_inline, "does>"
@@ -531,6 +548,7 @@ does: @ Gives freshly defined word a special action.
 
   @ Universeller Sprung zu dodoes:  Universal jump to dodoes. There has already been a push {lr} before in the definition that calls does>.
   @ Davor ist in dem Wort, wo does> eingefügt wird schon ein push {lr} gewesen.
+  @ Before that, in the word where does> is inserted, there was already a push {lr}.
   movw r0, #:lower16:dodoes+1
   .ifdef does_above_64kb
     movt r0, #:upper16:dodoes+1   @ Dieser Teil ist Null, da dodoes weit am Anfang des Flashs sitzt.  Not needed as dodoes in core is in the lowest 64 kb.
@@ -550,6 +568,7 @@ does: @ Gives freshly defined word a special action.
 
 dodoes:
   @ Hier komme ich an. Die Adresse des Teils, der als Zieladresse für den Call-Befehl genutzt werden soll, befindet sich in LR.
+  @ This is where I come in. The address of the part that is to be used as the target address for the call command is in LR.
 
   @ The call to dodoes never returns.
   @ Instead, it compiles a call to the part after its invocation into the dictionary
@@ -580,7 +599,7 @@ dodoes:
 
   ldr r1, =Einsprungpunkt @ Get the address the long call has to be inserted.
   ldr r1, [r1] @ r1 enthält jetzt die Codestartadresse der aktuellen Definition.
-
+			   @ r1 now contains the code start address of the current definition.
 
   .ifdef flash8bytesblockwrite
     @ Special case which has different alignment depending if compiling into Flash (8-even) or into RAM (4-even).
@@ -653,12 +672,13 @@ dodoes_ram:
 1:
 
   adds r1, #2  @ Am Anfang sollte das neudefinierte Wort ein push {lr} enthalten, richtig ?
+			   @ At the beginning, the newly defined word should contain a push {lr}, right
                @ Skip the push {lr} opcode in that definition.
 
   @ Change the Dictionarypointer to insert the long call with the normal comma mechanism.
-      str r1, [r2] @ Dictionarypointer umbiegen
-  bl callkommalang @ Aufruf einfügen
-      str r3, [r2] @ Dictionarypointer wieder zurücksetzen.
+      str r1, [r2] @ Dictionarypointer umbiegen redirect dictionary pointer
+  bl callkommalang @ Aufruf einfügen Insert call
+      str r3, [r2] @ Dictionarypointer wieder zurücksetzen. Reset dictionary pointer again.
 
   bl smudge
   pop {pc}
@@ -749,7 +769,7 @@ builds_ram:
 .endif
 
       @ See where we are. The sequence written for <builds does> is 12 Bytes long on M3/M4.
-      @ So we need to advance to 16n + 4 so that the opcode sequence ends on a suitable border.
+      @ So we need to advance to 32n + 4 so that the opcode sequence ends on a suitable border.
 
 2:    bl here
       movs r0, #31
@@ -775,6 +795,6 @@ builds_ram:
   pushdaconstw 0xb500 @ Opcode für push {lr} schreiben  Write opcode for push {lr}
   bl hkomma
 
-  pushdaconst 10  @ Hier kommt ein Call-Befehl hinein, aber ich weiß die Adresse noch nicht.
+  pushdaconst 10  @ Hier kommt ein Call-Befehl hinein, aber ich weiß die Adresse noch nicht. A call command comes in here, but I don't know the address yet.
   bl allot        @ Lasse also eine passende Lücke frei !  Leave space for a long call opcode sequence.
   pop {pc}

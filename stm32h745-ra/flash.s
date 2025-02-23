@@ -223,28 +223,48 @@ eraseflashsector:  @ Löscht einen Flash-Sektor
   dup
   bl udot
 
-  @ Set sector to erase
-  ldr r2, =FLASH_CR
-  ldr r3, =0x00000084
-  lsls tos, #3
-  orrs r3, tos
-  str r3, [r2]
+	@ HAL does this, checks for any last operation to finish without errors
+	bl 		wait_for_last_operation
+	cmp 	r2, #0
+	beq		4f
+	pushdatos			@ print out the error code we got
+  	mov 	tos, r2
+  	bl 		hexdot
+	Fehler_Quit " Initial Flash error detected"
 
-    @ Wait for Flash BUSY Flag to be cleared
-    ldr r2, =FLASH_SR
-1:  ldr r3, [r2]
-    ands r3, #0x00010000
-    bne 1b
+4:
+	@ Set sector to erase
+	ldr 	r2, =FLASH_CR
+	ldr 	r3, [r2]
+	and 	r3, #0x00000030|0x00000700
+	orrs	r3, #0x00000004|0x00000030|0x00000080
+	lsls 	tos, #8
+	orrs 	r3, tos
+	str 	r3, [r2]
 
-  @ Lock Flash after finishing this
-  ldr r2, =FLASH_CR
-  ldr r3, =0x00000001
-  str r3, [r2]
+	bl 		wait_for_last_operation
+	mov  	r4, r2	 @ save any error
 
-  writeln "from Flash."
+	@ Lock Flash after finishing this
+	ldr 	r2, =FLASH_CR
+	ldr		r3, [r2]
+	ldr		r1, =0x00000004|0x00000700
+	and 	r3, r1
+	str 	r3, [r2]
+	orrs	r3, #0x00000001
+	str 	r3, [r2]
 
-2:drop
-  pop {pc}
+	@ check for error
+	cmp 	r4, #0
+	beq		5f
+	pushdatos			@ print out the error code we got
+  	mov 	tos, r4
+  	bl 		hexdot
+	Fehler_Quit " Flash erase error"
+
+5:	writeln "from Flash."
+	drop
+  	pop {pc}
 
 
 .macro loeschpruefung Anfang Ende Sektornummer
@@ -265,29 +285,27 @@ eraseflashsector:  @ Löscht einen Flash-Sektor
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "eraseflash" @ ( -- )
   @ Löscht den gesamten Inhalt des Flashdictionaries.
+  @ Deletes the entire contents of the Flash dictionary.
 @ -----------------------------------------------------------------------------
   @ Flash ist in Sektoren aufgeteilt. Prüfe die nacheinander, ob ein Löschen nötig ist.
   @ So kann ich den Speicher schonen und flott löschen :-)
+  @ Flash is divided into sectors. Check each one to see if deletion is necessary.
+  @ This way I can save memory and delete quickly :-)
   cpsid i @ Interrupt-Handler deaktivieren
 
   push {lr}
 
 @ -----------------------------------------------------------------------------
-@ 32 kb sectors
-@ loeschpruefung  0x08000000  0x08007FFF  0
-  loeschpruefung  0x08008000  0x0800FFFF  1
-  loeschpruefung  0x08010000  0x08017FFF  2
-  loeschpruefung  0x08018000  0x0801FFFF  3
+@ 128 kb sectors
+@ loeschpruefung  0x08000000  0x0801FFFF  0
+  loeschpruefung  0x08020000  0x0803FFFF  1
+  loeschpruefung  0x08040000  0x0805FFFF  2
+  loeschpruefung  0x08060000  0x0807FFFF  3
+  loeschpruefung  0x08080000  0x0809FFFF  4
+  loeschpruefung  0x080A0000  0x080BFFFF  5
+  loeschpruefung  0x080C0000  0x080DFFFF  6
+  loeschpruefung  0x080E0000  0x080FFFFF  7
 
-@ -----------------------------------------------------------------------------
-@ 128 kb sector
-  loeschpruefung  0x08020000  0x0803FFFF  4
-
-@ -----------------------------------------------------------------------------
-@ 256 kb sectors
-  loeschpruefung  0x08040000  0x0807FFFF  5
-  loeschpruefung  0x08080000  0x080BFFFF  6
-  loeschpruefung  0x080C0000  0x080FFFFF  7
 
   writeln "Finished. Reset !"
 

@@ -47,9 +47,10 @@
 
 @ Konstanten für die Größe und Aufteilung des Flash-Speichers
 @ Constants for the size and distribution of the flash memory
-.equ Kernschutzadresse,     0x08008000 @ Darunter wird niemals etwas geschrieben ! Mecrisp core never writes flash below this address.
-.equ FlashDictionaryAnfang, 0x08008000 @ 32  kb für den Kern reserviert...         32  kb Flash reserved for core.
-.equ FlashDictionaryEnde,   0x08100000 @ 1016 kb Platz für das Flash-Dictionary    1016 kb Flash available. Porting: Change this !
+.equ Kernschutzadresse,     0x08020000 @ Darunter wird niemals etwas geschrieben ! Mecrisp core never writes flash below this address.
+@ Note that the H743/5 can only erase flash in 128K sectors, this is why we have so much
+.equ FlashDictionaryAnfang, 0x08020000 @ 128  kb für den Kern reserviert. 128kb Flash reserved for core.
+.equ FlashDictionaryEnde,   0x08100000 @ 896kb Platz für das Flash-Dictionary 896kb Flash available. Porting: Change this !
 .equ Backlinkgrenze,        RamAnfang  @ Ab dem Ram-Start.
 
 
