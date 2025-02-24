@@ -3,19 +3,31 @@
     <note priority="medium" time="1740150727" done="1740177816">
         add flash32bytesblockwrite to other common files
     </note>
+    <note priority="medium" time="1740150739" done="1740326958">
+        check the flash erase code in flash.s
+        <comment>
+            t
+        </comment>
+    </note>
     <note priority="medium" time="1740150776" done="1740177803">
         fixup the clock code in terminal.s to be 400MHz etc
+    </note>
+    <note priority="medium" time="1740254376" done="1740326974">
+        create is offset by 16
     </note>
     <note priority="medium" time="1740150699">
         crash when list.fs is run
     </note>
-    <note priority="medium" time="1740150739">
-        check the flash erase code in flash.s
-    </note>
     <note priority="medium" time="1740156482">
         bug where , does not flash, flushflash leaves dictionary in turmoil
     </note>
-    <note priority="medium" time="1740254376">
-        create is offset by 16
+    <note priority="medium" time="1740327143">
+        use ramallot for flash linebuffer
+    </note>
+    <note priority="medium" time="1740327163">
+        figure out if cache can be turned back on
+    </note>
+    <note priority="medium" time="1740327172">
+        icache enable
     </note>
 </todo>
