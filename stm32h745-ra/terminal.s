@@ -118,13 +118,13 @@
   .equ RCC_D3CFGR_D3PPRE_Msk		,   0x7 << 4
   .equ RCC_APB4_DIV_2               ,   2 << 5  @ 200 MHz / 2 = 100 MHz APB4 clock
   .equ RCC_USART234578_CLKSOURCE_HSI,   3 << 0  @ 64 MHx HSI clock
-@ PLL 400 MHz
+@ PLL 400 MHz with 8MHz input clock from bypass (not xtal)
   .equ RCC_PLLCKSELR_PLLSRC_Msk 	,   0x3
   .equ RCC_PLLSRC_HSE               ,   2
   .equ RCC_PLLCFGR_DIVP1EN          ,   BIT16
   .equ RCC_PLLCFGR_DIVR1EN          ,   BIT18
   .equ RCC_PLLCFGR_PLL1RGE_Msk		,	3 << 2
-  .equ RCC_PLLINPUTRANGE_2          ,   2 << 2
+  .equ RCC_PLLINPUTRANGE_1          ,   1 << 2
   .equ RCC_PLLCFGR_PLL1VCOSEL		,   1 << 1
   .equ RCC_PLLVCORANGE_WIDE         ,   0 << 1
   .equ RCC_PLLCKSELR_DIVM1_Msk		,   0x3F << 4
@@ -252,7 +252,7 @@ set_pll_400_mhz_sysclk:
   modify_reg 	RCC_PLLCKSELR, 	RCC_PLLCKSELR_PLLSRC_Msk, 	RCC_PLLSRC_HSE
   set_bit 		RCC_PLLCFGR, 	RCC_PLLCFGR_DIVP1EN
   set_bit 		RCC_PLLCFGR, 	RCC_PLLCFGR_DIVR1EN
-  modify_reg 	RCC_PLLCFGR, 	RCC_PLLCFGR_PLL1RGE_Msk,	RCC_PLLINPUTRANGE_2
+  modify_reg 	RCC_PLLCFGR, 	RCC_PLLCFGR_PLL1RGE_Msk,	RCC_PLLINPUTRANGE_1  @ 2-4
   modify_reg 	RCC_PLLCFGR, 	RCC_PLLCFGR_PLL1VCOSEL,		RCC_PLLVCORANGE_WIDE
   modify_reg 	RCC_PLLCKSELR, 	RCC_PLLCKSELR_DIVM1_Msk, 	RCC_PLLCKSELR_DIVM1
   mov r2, RCC_PLL1DIVR_N1

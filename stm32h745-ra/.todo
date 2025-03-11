@@ -15,8 +15,11 @@
     <note priority="medium" time="1740254376" done="1740326974">
         create is offset by 16
     </note>
-    <note priority="medium" time="1740150699">
+    <note priority="medium" time="1740150699" done="1740505630">
         crash when list.fs is run
+        <comment>
+            was cache
+        </comment>
     </note>
     <note priority="medium" time="1740156482">
         bug where , does not flash, flushflash leaves dictionary in turmoil
@@ -29,5 +32,8 @@
     </note>
     <note priority="medium" time="1740327172">
         icache enable
+    </note>
+    <note priority="medium" time="1740403553">
+        need to invalidate cache after compiling a new word
     </note>
 </todo>

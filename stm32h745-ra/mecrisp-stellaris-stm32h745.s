@@ -28,6 +28,7 @@
 @.equ charkommaavailable, 1
 .equ does_above_64kb, 1
 .equ flash32bytesblockwrite, 1
+.equ color, 1
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
