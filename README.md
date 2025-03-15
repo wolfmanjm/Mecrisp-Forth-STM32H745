@@ -20,5 +20,11 @@ I fixed a bug in create that left an address 16 bytes short when the new word is
 
 * codegenerator-m3.s Line 524
 
+Also...
+
+* added a version of crests stm32h750 port modified for the weact h750 board
+* added the missing ACK/NAK codes to colored prompts
+* added swdcomm support to the STM32H745 port, and uses swd as the default as it is a Nucleo board
+  but a define in mecrisp-stellaris-stm32h745.s can switch back to the uart as default
 
 
