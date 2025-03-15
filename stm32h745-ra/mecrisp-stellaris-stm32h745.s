@@ -30,6 +30,9 @@
 .equ flash32bytesblockwrite, 1
 .equ color, 1
 
+@ set the default comms to use
+.equ default_swdcomms, 1
+
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
 @ -----------------------------------------------------------------------------
@@ -78,7 +81,7 @@ Reset: @ Einsprung zu Beginn
    @ Catch the pointers for Flash dictionary
    .include "../common/catchflashpointers.s"
 
-   welcome " for STM32H745 Nucleo by Matthias Koch"
+   welcome " for STM32H745 Nucleo v3 by Matthias Koch"
 
    @ Ready to fly !
    .include "../common/boot.s"

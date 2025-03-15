@@ -386,7 +386,7 @@ psp .req r7
   bl dotgaensefuesschen
         .byte 8f - 7f         @ Compute length of name field.
 .ifdef color
-7:    .ascii "\x1B[31m\Meldung\x1B[0m\n"
+7:    .ascii "\x15\x1B[31m\Meldung\x1B[0m\n"
 .else
 7:    .ascii "\Meldung\n"
 .endif
@@ -403,7 +403,7 @@ psp .req r7
   bl dotgaensefuesschen
         .byte 8f - 7f         @ Compute length of name field.
 .ifdef color
-7:    .ascii "\x1B[31m\Meldung\x1B[0m\n"
+7:    .ascii "\x15\x1B[31m\Meldung\x1B[0m\n"
 .else
 7:    .ascii "\Meldung\n"
 .endif

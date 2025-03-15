@@ -25,7 +25,12 @@
   pushdatos
   ldr tos, =hook_emit
   bx lr
+
+  .ifdef default_swdcomms
+  .word swd_emit
+  .else
   .word serial_emit  @ Serial communication for default
+  .endif
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-key" @ ( -- addr )
@@ -34,7 +39,11 @@
   pushdatos
   ldr tos, =hook_key
   bx lr
+  .ifdef default_swdcomms
+  .word swd_key
+  .else
   .word serial_key  @ Serial communication for default
+  .endif
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-emit?" @ ( -- addr )
@@ -43,7 +52,11 @@
   pushdatos
   ldr tos, =hook_qemit
   bx lr
+  .ifdef default_swdcomms
+  .word swd_qemit
+  .else
   .word serial_qemit  @ Serial communication for default
+  .endif
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-key?" @ ( -- addr )
@@ -52,7 +65,11 @@
   pushdatos
   ldr tos, =hook_qkey
   bx lr
+  .ifdef default_swdcomms
+  .word swd_qkey
+  .else
   .word serial_qkey  @ Serial communication for default
+  .endif
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-pause" @ ( -- addr )

@@ -16,7 +16,7 @@
 @    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @
 
-@ Terminal interface for stm32h745 Nucleo @ 480 MHz via debug virtual comport
+@ Terminal interface for stm32h743 Nucleo @ 480 MHz via debug virtual comport
 @ VCP_TX - PD8 USART3 AF7 USART1_TX
 @ VCP_RX - PD9 USART3 AF7 USART1_RX
 
@@ -106,37 +106,37 @@
   .equ RCC_CR_PLL1RDY               ,   BIT25
   .equ RCC_CFGR_SW_Msk				,   0x7 << 0
   .equ RCC_SYS_CLKSOURCE_PLL1       ,   3
-  .equ RCC_SYSCLK_DIV_1             ,   0 << 8  @ 400 MHz / 1 = 400 MHz sysclock
+  .equ RCC_SYSCLK_DIV_1             ,   0 << 8  @ 480 MHz / 1 = 480 MHz sysclock
   .equ RCC_D1CFGR_HPRE_Msk			,   0xF << 0
-  .equ RCC_AHB_DIV_2                ,   8 << 0  @ 400 MHz / 2 = 200 MHz AHB clock
+  .equ RCC_AHB_DIV_2                ,   8 << 0  @ 480 MHz / 2 = 240 MHz AHB clock
   .equ RCC_D2CFGR_D2PPRE1_Msk       ,   0x7 << 4
-  .equ RCC_APB1_DIV_2               ,   2 << 5  @ 200 MHz / 2 = 100 MHz APB1 clock
+  .equ RCC_APB1_DIV_2               ,   2 << 5  @ 240 MHz / 2 = 120 MHz APB1 clock
   .equ RCC_D2CFGR_D2PPRE2_Msk		,   0x7 << 8
-  .equ RCC_APB2_DIV_2               ,   2 << 9  @ 200 MHz / 2 = 100 MHz APB2 clock
+  .equ RCC_APB2_DIV_2               ,   2 << 9  @ 240 MHz / 2 = 120 MHz APB2 clock
   .equ RCC_D1CFGR_D1PPRE_Msk		,	0x7 << 4
-  .equ RCC_APB3_DIV_2               ,   2 << 5  @ 200 MHz / 2 = 100 MHz APB3 clock
+  .equ RCC_APB3_DIV_2               ,   2 << 5  @ 240 MHz / 2 = 120 MHz APB3 clock
   .equ RCC_D3CFGR_D3PPRE_Msk		,   0x7 << 4
-  .equ RCC_APB4_DIV_2               ,   2 << 5  @ 200 MHz / 2 = 100 MHz APB4 clock
+  .equ RCC_APB4_DIV_2               ,   2 << 5  @ 240 MHz / 2 = 120 MHz APB4 clock
   .equ RCC_USART234578_CLKSOURCE_HSI,   3 << 0  @ 64 MHx HSI clock
-@ PLL 400 MHz with 8MHz input clock from bypass (not xtal)
+@ PLL 480 MHz
   .equ RCC_PLLCKSELR_PLLSRC_Msk 	,   0x3
   .equ RCC_PLLSRC_HSE               ,   2
   .equ RCC_PLLCFGR_DIVP1EN          ,   BIT16
   .equ RCC_PLLCFGR_DIVR1EN          ,   BIT18
   .equ RCC_PLLCFGR_PLL1RGE_Msk		,	3 << 2
-  .equ RCC_PLLINPUTRANGE_1          ,   1 << 2
+  .equ RCC_PLLINPUTRANGE_8_16       ,   3 << 2
   .equ RCC_PLLCFGR_PLL1VCOSEL		,   1 << 1
   .equ RCC_PLLVCORANGE_WIDE         ,   0 << 1
   .equ RCC_PLLCKSELR_DIVM1_Msk		,   0x3F << 4
-  .equ RCC_PLLCKSELR_DIVM1          ,   4 << 4          @ 8 MHz input / 4 = 2 MHz
+  .equ RCC_PLLCKSELR_DIVM1          ,   1 << 4          @ 8 MHz input / 1 = 8 MHz
   .equ RCC_PLL1DIVR_N1_Msk			,	0xFF << 1
-  .equ RCC_PLL1DIVR_N1              ,   (400 - 1) << 0  @ 2 MHz * 400  = 800 MHz
+  .equ RCC_PLL1DIVR_N1              ,   (120 - 1) << 0  @ 8 MHz * 120  = 960 MHz
   .equ RCC_PLL1DIVR_P1_Msk			,   0x7F << 9
-  .equ RCC_PLL1DIVR_P1              ,   (2 - 1) << 9    @ 800 MHz / 2 = 400 MHz
+  .equ RCC_PLL1DIVR_P1              ,   (2 - 1) << 9    @ 960 MHz / 2 = 480 MHz
   .equ RCC_PLL1DIVR_Q1_Msk			,   0x7F << 16
-  .equ RCC_PLL1DIVR_Q1              ,   (4 - 1) << 16   @ 800 MHz / 4 = 200 MHz
+  .equ RCC_PLL1DIVR_Q1              ,   (4 - 1) << 16   @ 960 MHz / 4 = 240 MHz
   .equ RCC_PLL1DIVR_R1_Msk			,   0x7F << 24
-  .equ RCC_PLL1DIVR_R1              ,   (2 - 1) << 24   @ 800 MHz / 2 = 400 MHz
+  .equ RCC_PLL1DIVR_R1              ,   (2 - 1) << 24   @ 960 MHz / 2 = 480 MHz
 
 @ USART registers
   .equ Terminal_USART_Base, 0x40004800 @ USART 3
@@ -167,14 +167,6 @@
   ldr   r0, [r1]
   bic.w r0, \clearmask
   orr.w r0, \setmask
-  str   r0, [r1]
-.endm
-
-.macro modify_reg_big reg, clearmask, setmask
-  ldr   r1, = \reg
-  ldr   r0, [r1]
-  bic.w r0, \clearmask
-  orr.l r0, \setmask
   str   r0, [r1]
 .endm
 
@@ -219,26 +211,13 @@ set_flash_latency:
   bne   1b
   bx    lr
 
-@ For Nucleo STM32H745
-@#define PWR_CR3_SMPSEN_Pos             (2U)
-@#define PWR_CR3_SMPSEN_Msk             (0x1UL << PWR_CR3_SMPSEN_Pos)           /*!< 0x00000004 */
-@#define PWR_CR3_SMPSEN                 PWR_CR3_SMPSEN_Msk                      /*!< SMPS Enable */
-@HAL_PWREx_ConfigSupply(PWR_DIRECT_SMPS_SUPPLY);
-@MODIFY_REG (PWR->CR3, PWR_SUPPLY_CONFIG_MASK, SupplySource);
-@ PWR_SUPPLY_CONFIG_MASK = $30 | $08 | $04 | $02 | $01
-@ PWR_DIRECT_SMPS_SUPPLY = 0x00000004
-
 set_power_config:
-  modify_reg 	PWR_CR3, (0x30 | 0x08 | 0x04 | 0x02 | 0x01), 0x04
+  modify_reg 	PWR_CR3, (PWR_CR3_SCUEN | PWR_CR3_LDOEN | PWR_CR3_BYPASS), PWR_CR3_LDOEN
   bx    lr
   
 set_voltage_scaling:
-  modify_reg PWR_D3CR, 0x0000C000, 0x00004000 | 0x00008000 @ PWR_REGU_VOLTAGE_SCALE1
-  @ ((PWR->D3CR & PWR_D3CR_VOSRDY)     == PWR_D3CR_VOSRDY)
-1: 	ldr  r0, [r1]  @ PWR_D3CR
-  	ands  r0, #0x00002000 @ VOSRDY
-  	beq   1b
-  	bx    lr
+  modify_reg 	PWR_D3CR, 		PWR_D3CR_VOS_Msk, 			PWR_REGU_VOLTAGE_SCALE0
+  bx    lr
 
 enable_bypass_hse:
   set_bit RCC_CR, RCC_CR_HSEBYP
@@ -248,15 +227,14 @@ enable_bypass_hse:
   beq   1b
   bx    lr
 
-set_pll_400_mhz_sysclk:
+set_pll_480_mhz_sysclk:
   modify_reg 	RCC_PLLCKSELR, 	RCC_PLLCKSELR_PLLSRC_Msk, 	RCC_PLLSRC_HSE
   set_bit 		RCC_PLLCFGR, 	RCC_PLLCFGR_DIVP1EN
   set_bit 		RCC_PLLCFGR, 	RCC_PLLCFGR_DIVR1EN
-  modify_reg 	RCC_PLLCFGR, 	RCC_PLLCFGR_PLL1RGE_Msk,	RCC_PLLINPUTRANGE_1  @ 2-4
+  modify_reg 	RCC_PLLCFGR, 	RCC_PLLCFGR_PLL1RGE_Msk,	RCC_PLLINPUTRANGE_8_16
   modify_reg 	RCC_PLLCFGR, 	RCC_PLLCFGR_PLL1VCOSEL,		RCC_PLLVCORANGE_WIDE
   modify_reg 	RCC_PLLCKSELR, 	RCC_PLLCKSELR_DIVM1_Msk, 	RCC_PLLCKSELR_DIVM1
-  mov r2, RCC_PLL1DIVR_N1
-  modify_reg 	RCC_PLL1DIVR, 	RCC_PLL1DIVR_N1_Msk, 		r2
+  modify_reg 	RCC_PLL1DIVR, 	RCC_PLL1DIVR_N1_Msk, 		RCC_PLL1DIVR_N1
   modify_reg 	RCC_PLL1DIVR, 	RCC_PLL1DIVR_P1_Msk, 		RCC_PLL1DIVR_P1
   modify_reg 	RCC_PLL1DIVR, 	RCC_PLL1DIVR_Q1_Msk, 		RCC_PLL1DIVR_Q1
   modify_reg 	RCC_PLL1DIVR, 	RCC_PLL1DIVR_R1_Msk, 		RCC_PLL1DIVR_R1
@@ -286,17 +264,15 @@ uart_init: @ ( -- )
   push {lr}
 
   @ first enable caches and set highest CPU clock for performance
-  @bl enable_i_cache
-  @bl enable_d_cache
+  bl enable_i_cache
+  bl enable_d_cache
+  bl set_flash_latency
   bl set_power_config
   bl set_voltage_scaling
   bl enable_bypass_hse
-  bl set_pll_400_mhz_sysclk
+  bl set_pll_480_mhz_sysclk
   bl enable_pll
   bl set_prescalers
-  bl set_flash_latency
-  @bl enable_csi
-  @bl enable_compensation
 
   @ Select HSI clock (64 MHz) for USART3
   ldr  r1, = RCC_D2CCIP2R
@@ -359,15 +335,13 @@ uart_init: @ ( -- )
   ldr  r0, =USART_CR1_UE + USART_CR1_TE + USART_CR1_RE
   str  r0, [r1]
 
-  @ init the swd
-  bl   swd_init
-
   pop {lr}
 
   bx   lr
 
   .ltorg @ Hier werden viele spezielle Hardwarestellenkonstanten gebraucht, schreibe sie gleich !
 
+@ Following code is the same as for STM32F051
 .include "../common/terminalhooks.s"
 
 @ -----------------------------------------------------------------------------
@@ -437,7 +411,3 @@ serial_qkey:  @ ( -- ? ) Is there a key press ?
 1: pop {pc}
 
   .ltorg @ Hier werden viele spezielle Hardwarestellenkonstanten gebraucht, schreibe sie gleich !
-
-@ the SWD COMM handlers
-.include "swdcomm.s"
-

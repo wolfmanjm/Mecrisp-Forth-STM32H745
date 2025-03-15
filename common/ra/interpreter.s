@@ -258,9 +258,9 @@ quit_innenschleife:  @ Main loop of Forth system.
   ldr r0, [r0]
   cmp r0, #0
   beq 1f
-    write " \x1B[34m"
+    write " \x06\x1B[34m"
     b 2f
-1:  write " \x1B[36m"
+1:  write " \x06\x1B[36m"
 2:
 
   @ Check memory target
