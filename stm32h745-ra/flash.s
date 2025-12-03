@@ -263,7 +263,7 @@ eraseflashsector:  @ Löscht einen Flash-Sektor
 	Fehler_Quit " Flash erase error"
 
 5:	writeln "from Flash."
-	drop
+2:	drop
   	pop {pc}
 
 

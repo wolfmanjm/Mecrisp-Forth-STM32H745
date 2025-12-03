@@ -75,7 +75,7 @@ swd_addr:
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "swd-init"
 @ -----------------------------------------------------------------------------
-swd_init:                      @ Hijack the usart_init symbol to minimize code changes
+swd_init:
     push {lr}
 
     ldr  r1, =SWD_BUFFER	    @
@@ -89,7 +89,7 @@ swd_init:                      @ Hijack the usart_init symbol to minimize code c
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "swd-key?" @ ( -- ? )
 @ -----------------------------------------------------------------------------
-swd_qkey:            @ Hijack the serial_qkey symbol to minimize code changes
+swd_qkey:
     push  {lr}          @ Yield the CPU
     bl    pause
 
@@ -108,7 +108,7 @@ swd_qkey:            @ Hijack the serial_qkey symbol to minimize code changes
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "swd-emit?" @ ( -- ? )
 @ -----------------------------------------------------------------------------
-swd_qemit:        @ Hijack the serial_qemit symbol to minimize code changes
+swd_qemit:
     push {lr}        @ Yield the CPU
     bl pause
 
@@ -128,7 +128,7 @@ swd_qemit:        @ Hijack the serial_qemit symbol to minimize code changes
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "swd-key" @ ( -- c )
 @ -----------------------------------------------------------------------------
-swd_key:             @ Hijack the serial_key symbol to minimize code changes
+swd_key:
     dup
 
     mov  r2, r11        @ Load SWD buffer base address into a low register
@@ -148,7 +148,7 @@ swd_key:             @ Hijack the serial_key symbol to minimize code changes
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "swd-emit" @ ( c -- )
 @ -----------------------------------------------------------------------------
-swd_emit:            @ Hijack the serial_emit symbol to minimize code changes
+swd_emit:
     mov  r3, r11        @ Load SWD buffer base address into a low register
     ldrb r0, [r3, 2]    @ Cache TX write index
     adds r1, r0, 1      @ Increment TX write index % 256

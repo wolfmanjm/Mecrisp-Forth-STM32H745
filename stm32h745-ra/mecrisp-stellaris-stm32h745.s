@@ -31,7 +31,7 @@
 .equ color, 1
 
 @ set the default comms to use
-.equ default_swdcomms, 1
+@.equ default_swdcomms, 0
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
