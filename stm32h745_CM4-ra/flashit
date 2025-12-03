@@ -1,0 +1,1 @@
+STM32_Programmer_CLI -c port=SWD -w mecrisp-stellaris-stm32h745_CM4.bin 0x081C0000 -rst
